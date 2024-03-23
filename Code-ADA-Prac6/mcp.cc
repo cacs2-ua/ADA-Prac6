@@ -89,7 +89,7 @@ int sumatorio(const std::vector<size_t>& numeros) {
 
 size_t mcp_naive(const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m, size_t i, size_t j) {
     size_t result = 0;
-    
+
     if (m == 1) {
         for (size_t k = i; k < n; k++) {
             result += mcp[k][0];
@@ -113,17 +113,46 @@ size_t mcp_naive(const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m
 
 }
 
+void setRowsColumns (size_t &n, size_t &m, ifstream &f) {
+    f >> n >> m;
+}
+
+void SetMcp(std::vector<std::vector<size_t>>& mcp, std::ifstream &f) {
+    std::string line;
+    size_t row = 0;
+
+    // Leer el resto del archivo línea por línea
+    while (std::getline(f, line)) {
+        std::istringstream iss(line);
+        size_t value, col = 0;
+        // Leer cada valor en la línea actual y asignarlo a mcp
+        while (iss >> value) {
+            mcp[row][col] = value;
+            ++col;
+        }
+        ++row;
+    }
+}
+
+
 int main (int argc, char* argv[]) {
     bool t = false;
     bool p2D = false;
     bool ignoreNaive = false;
     string fileName;
+    size_t n = -1;
+    size_t m = -1;
     argumentsChecking(argc,argv,t,p2D,ignoreNaive,fileName);
+    /*
     cout << "Evereything Okay :D" << endl;
     cout << "t: " << t << endl
          << "p2D: " << p2D << endl
          << "ignoreNaive: " << ignoreNaive << endl
          << "fileName: " << fileName << endl;
-    return 0;
+    */
+   
+   ifstream f(fileName);
+   setRowsColumns(n,m,f);
+   return 0;
 }
 
