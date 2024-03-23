@@ -120,7 +120,6 @@ void setRowsColumns (size_t &n, size_t &m, ifstream &f) {
 void SetMcp(std::vector<std::vector<size_t>>& mcp, std::ifstream &f) {
     std::string line;
     size_t row = 0;
-
     // Leer el resto del archivo línea por línea
     while (std::getline(f, line)) {
         std::istringstream iss(line);
@@ -128,9 +127,9 @@ void SetMcp(std::vector<std::vector<size_t>>& mcp, std::ifstream &f) {
         // Leer cada valor en la línea actual y asignarlo a mcp
         while (iss >> value) {
             mcp[row][col] = value;
-            ++col;
+            col++;
         }
-        ++row;
+        row++;
     }
 }
 
@@ -140,19 +139,18 @@ int main (int argc, char* argv[]) {
     bool p2D = false;
     bool ignoreNaive = false;
     string fileName;
-    size_t n = -1;
-    size_t m = -1;
+    size_t n = 0;
+    size_t m = 0;
     argumentsChecking(argc,argv,t,p2D,ignoreNaive,fileName);
-    /*
-    cout << "Evereything Okay :D" << endl;
-    cout << "t: " << t << endl
-         << "p2D: " << p2D << endl
-         << "ignoreNaive: " << ignoreNaive << endl
-         << "fileName: " << fileName << endl;
-    */
-   
+    
    ifstream f(fileName);
-   setRowsColumns(n,m,f);
+   if (f.is_open()) {
+    setRowsColumns(n,m,f);
+    std::vector<std::vector<size_t>> mcp(n, std::vector<size_t>(m));
+    SetMcp(mcp, f);
+    f.close();
+   }
+   
    return 0;
 }
 
