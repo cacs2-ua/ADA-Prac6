@@ -79,6 +79,28 @@ void argumentsChecking(int argc, char* argv[], bool &t,
     }
 }
 
+void setRowsColumns (size_t &n, size_t &m, ifstream &f) {
+    f >> n >> m;
+
+    f.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+void SetMcp(std::vector<std::vector<size_t>>& mcp, std::ifstream &f) {
+    std::string line;
+    size_t row = 0;
+    // Leer el resto del archivo línea por línea
+    while (std::getline(f, line)) {
+        std::istringstream iss(line);
+        size_t value, col = 0;
+        // Leer cada valor en la línea actual y asignarlo a mcp
+        while (iss >> value) {
+            mcp[row][col] = value;
+            col++;
+        }
+        row++;
+    }
+}
+
 int sumatorio(const std::vector<size_t>& numeros) {
     size_t suma = 0;
     for (size_t numero : numeros) {
@@ -113,28 +135,6 @@ size_t mcp_naive(const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m
         return result;
     }
 
-}
-
-void setRowsColumns (size_t &n, size_t &m, ifstream &f) {
-    f >> n >> m;
-
-    f.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-}
-
-void SetMcp(std::vector<std::vector<size_t>>& mcp, std::ifstream &f) {
-    std::string line;
-    size_t row = 0;
-    // Leer el resto del archivo línea por línea
-    while (std::getline(f, line)) {
-        std::istringstream iss(line);
-        size_t value, col = 0;
-        // Leer cada valor en la línea actual y asignarlo a mcp
-        while (iss >> value) {
-            mcp[row][col] = value;
-            col++;
-        }
-        row++;
-    }
 }
 
 
