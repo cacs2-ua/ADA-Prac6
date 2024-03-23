@@ -1,9 +1,30 @@
-#include <iostream>
-#include <string>
-#include <fstream>
+#include <iostream> 
 #include <limits>
+#include <algorithm>
+#include <vector>
+#include <fstream>
+#include <string>
+#include <iomanip>
+#include <sstream> 
+
+#define SENTINEL -1
 
 using namespace std;
+
+
+struct mcp_t {
+    std::vector<std::vector<int>> mcp;
+    int n = 0;
+    int m = 0;
+    /*
+    bool tables = false;
+    bool ignoreNaive = false;
+    bool path = false;
+    */
+
+    std::vector<std::vector<int>> tablaMemoization;
+    std::vector<std::vector<int>> tablaIterativa;
+};
 
 void showUsage() {
     cout << "Usage:" << endl 
@@ -56,6 +77,40 @@ void argumentsChecking(int argc, char* argv[], bool &t,
             exit(EXIT_FAILURE);
         }
     }
+}
+
+int sumatorio(const std::vector<size_t>& numeros) {
+    size_t suma = 0;
+    for (size_t numero : numeros) {
+        suma += numero;
+    }
+    return suma;
+}
+
+size_t mcp_naive(const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m, size_t i, size_t j) {
+    size_t result = 0;
+    
+    if (m == 1) {
+        for (size_t k = i; k < n; k++) {
+            result += mcp[k][0];
+        }
+        return result;
+    }
+
+    else if (n == 1) {
+        for (size_t k = j; k < m; k++) {
+            result += mcp[0][k];
+        }
+        return result;
+    }
+
+    else {
+        result = min(mcp_naive(mcp, n, m-1, i, j+1) + mcp[i][j + 1],
+                     mcp_naive(mcp, n-1, m-1, i+1, j+1) + mcp[i + 1][j + 1],
+                     mcp_naive(mcp, n-1, m, i+1, j) + mcp[i + 1][j]);
+        return result;
+    }
+
 }
 
 int main (int argc, char* argv[]) {

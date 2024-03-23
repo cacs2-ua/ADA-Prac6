@@ -59,7 +59,15 @@ void argumentsChecking(int argc, char* argv[], bool &t,
 
 }
 
+
 int main (int argc, char* argv[]) {
+
+    
+    return 0;
+}
+
+
+void test1(int argc, char* argv[]) {
     bool t = false;
     bool p2D = false;
     bool ignoreNaive = false;
@@ -70,6 +78,5 @@ int main (int argc, char* argv[]) {
          << "p2D: " << p2D << endl
          << "ignoreNaive: " << ignoreNaive << endl
          << "fileName: " << fileName << endl;
-    return 0;
 }
 
