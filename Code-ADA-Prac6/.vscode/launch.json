@@ -9,7 +9,7 @@
       "stopAtEntry": false,
       "externalConsole": false,
       "cwd": "/home/cris/UA/thirdYear/secondTerm/ADA/Practicas/Practica6/ADA-Prac6/Code-ADA-Prac6",
-      "program": "/home/cris/UA/thirdYear/secondTerm/ADA/Practicas/Practica6/ADA-Prac6/Code-ADA-Prac6/build/Debug/outDebug",
+      "program": "/home/cris/UA/thirdYear/secondTerm/ADA/Practicas/Practica6/ADA-Prac6/Code-ADA-Prac6/build/Debug/mcp",
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb",
       "setupCommands": [

@@ -90,24 +90,26 @@ int sumatorio(const std::vector<size_t>& numeros) {
 size_t mcp_naive(const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m, size_t i, size_t j) {
     size_t result = 0;
 
-    if (m == 1) {
-        for (size_t k = i; k < n; k++) {
-            result += mcp[k][0];
+    if (i == n-1) {
+        for (size_t k = j; k < m; k++) {
+            result += mcp[n-1][k];
         }
         return result;
     }
 
-    else if (n == 1) {
-        for (size_t k = j; k < m; k++) {
-            result += mcp[0][k];
+    else if (j == m-1) {
+        for (size_t k = i; k < n; k++) {
+            result += mcp[k][m-1];
         }
         return result;
     }
 
     else {
-        result = min(mcp_naive(mcp, n, m-1, i, j+1) + mcp[i][j + 1],
-                     mcp_naive(mcp, n-1, m-1, i+1, j+1) + mcp[i + 1][j + 1],
-                     mcp_naive(mcp, n-1, m, i+1, j) + mcp[i + 1][j]);
+        result = min({
+    mcp[i][j] + mcp_naive(mcp,n,m,i,j+1),
+    mcp[i][j] + mcp_naive(mcp,n,m,i+1,j+1),
+    mcp[i][j] + mcp_naive(mcp,n,m,i+1,j)
+});
         return result;
     }
 
@@ -115,6 +117,8 @@ size_t mcp_naive(const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m
 
 void setRowsColumns (size_t &n, size_t &m, ifstream &f) {
     f >> n >> m;
+
+    f.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
 void SetMcp(std::vector<std::vector<size_t>>& mcp, std::ifstream &f) {
@@ -138,19 +142,20 @@ int main (int argc, char* argv[]) {
     bool t = false;
     bool p2D = false;
     bool ignoreNaive = false;
-    string fileName;
     size_t n = 0;
     size_t m = 0;
+    string fileName;
     argumentsChecking(argc,argv,t,p2D,ignoreNaive,fileName);
-    
-   ifstream f(fileName);
-   if (f.is_open()) {
+    ifstream f(fileName);
+    if (f.is_open()) {
     setRowsColumns(n,m,f);
     std::vector<std::vector<size_t>> mcp(n, std::vector<size_t>(m));
     SetMcp(mcp, f);
+    size_t result = mcp_naive(mcp, n, m, 0, 0);
+    cout << result;
     f.close();
-   }
-   
-   return 0;
+    }
+
+    return 0;
 }
 
