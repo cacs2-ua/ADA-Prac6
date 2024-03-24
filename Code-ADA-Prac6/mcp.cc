@@ -137,6 +137,42 @@ size_t mcp_naive(const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m
 
 }
 
+size_t mcp_memo(std::vector<std::vector<size_t>>& storage,const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m, size_t i, size_t j) {
+    if (i == 0 && j == 0)
+        storage[i][j] = mcp[0][0];
+
+    if (i == 0)
+        storage[i][j] = storage[i][j-1] + mcp[i][j];
+        
+    if (j == 0)
+        storage[i][j] = storage[i-1][j] + mcp[i][j];
+
+    if (i == n-1) {
+        for (size_t k = j; k < m; k++) {
+            storage[n-1][k] = storage[n-1][k-1] + mcp[n-1][k];
+        }
+        return storage[n-1][m-1];
+    }
+
+    else if (j == m-1) {
+        for (size_t k = i; k < n; k++) {    
+            storage[k][m-1] = storage[k-1][m-1] + mcp[k][m-1];
+        }
+        return storage[k][m-1];
+    }
+
+    else {
+
+        storage[]
+        result = min({
+    mcp[i][j] + mcp_naive(mcp,n,m,i,j+1),
+    mcp[i][j] + mcp_naive(mcp,n,m,i+1,j+1),
+    mcp[i][j] + mcp_naive(mcp,n,m,i+1,j)
+});
+        return result;
+    }
+
+}
 
 int main (int argc, char* argv[]) {
     bool t = false;
