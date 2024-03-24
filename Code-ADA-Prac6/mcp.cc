@@ -137,41 +137,37 @@ size_t mcp_naive(const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m
 
 }
 
-size_t mcp_memo(std::vector<std::vector<size_t>>& storage,const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m, size_t i, size_t j) {
-    if (storage[n-1][m-1] != SENTINEL)
-        return storage[n-1][m-1];
-
-    if (i == n-1) {
-        for (size_t k = j; k < m; k++) {
-            if (j == 0 && i != 0) { //if it's not the initial square
-              return storage[n-1][k] = storage[n-2][k] + mcp[n-1][k];
-            }
-            else
-              return storage[n-1][k] = storage[n-1][k-1] + mcp[n-1][k];
-        }
+size_t mcp_memo(std::vector<std::vector<size_t>>& storage, const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m, size_t i, size_t j) {
+    // Verifica si el valor ya ha sido calculado y almacenado
+    if (storage[i][j] != SENTINEL) {
+        return storage[i][j];
     }
 
-    else if (j == m-1) {
-        for (size_t k = i; k < n; k++) { 
-            if (i == 0 && j != 0)   
-              return storage[k][m-1] = storage[k][m-2] + mcp[k][m-1];
-            else
-               return storage[k][m-1] = storage[k-1][m-1] + mcp[k][m-1];
-        }
+    // Casos base: llegada a los bordes de la matriz
+    if (i == n - 1 && j == m - 1) {
+        return storage[i][j] = mcp[i][j];
+    }
+    if (i == n - 1) { // Última fila, solo puede moverse hacia la derecha
+        return storage[i][j] = mcp[i][j] + mcp_memo(storage, mcp, n, m, i, j + 1);
+    }
+    if (j == m - 1) { // Última columna, solo puede moverse hacia abajo
+        return storage[i][j] = mcp[i][j] + mcp_memo(storage, mcp, n, m, i + 1, j);
     }
 
-    else {
-     return storage[i][j] = min({
-        mcp[i][j] + mcp_naive(mcp,n,m,i,j+1),
-        mcp[i][j] + mcp_naive(mcp,n,m,i+1,j+1),
-        mcp[i][j] + mcp_naive(mcp,n,m,i+1,j)
-        });
-    }
+    // Calcula el mínimo costo de los tres posibles movimientos siguientes
+    size_t right = mcp_memo(storage, mcp, n, m, i, j + 1);
+    size_t down = mcp_memo(storage, mcp, n, m, i + 1, j);
+    size_t diagonal = mcp_memo(storage, mcp, n, m, i + 1, j + 1);
+
+    // Almacena el resultado en storage antes de retornar
+    storage[i][j] = mcp[i][j] + std::min({right, down, diagonal});
+
+    return storage[i][j];
 }
 
-size_t mcp_memo(const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m, size_t i, size_t j) {
-    vector<vector<size_t>>storage(n, vector<size_t>(m, SENTINEL));
-    return mcp_memo(storage,mcp,n,m,i,j);
+size_t mcp_memo(const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m) {
+    std::vector<std::vector<size_t>> storage(n, std::vector<size_t>(m, SENTINEL));
+    return mcp_memo(storage, mcp, n, m, 0, 0);
 }
 
 int main (int argc, char* argv[]) {
@@ -187,8 +183,12 @@ int main (int argc, char* argv[]) {
     setRowsColumns(n,m,f);
     std::vector<std::vector<size_t>> mcp(n, std::vector<size_t>(m));
     SetMcp(mcp, f);
-    size_t result = mcp_naive(mcp, n, m, 0, 0);
-    cout << result;
+    if (ignoreNaive == false) {
+        size_t result = mcp_naive(mcp, n, m, 0, 0);
+        cout << result << endl;
+    }
+    cout << "memo solution" << endl;
+    cout << mcp_memo(mcp,n,m);
     f.close();
     }
 
