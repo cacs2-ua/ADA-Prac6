@@ -31,6 +31,26 @@ void showUsage() {
          << "mcp [--p2D] [-t] [--ignore-naive] -f file" << endl;
 }
 
+void printResultsFirstPartOfPractice
+(size_t naiveResult, size_t memoResult,
+bool ignoreNaive, bool p2D, bool t) {
+    if (ignoreNaive == true) {
+        cout << "- " << memoResult << " ? ?" << endl;
+        if (p2D == true) 
+            cout << "?" << endl;
+        if (t == true)
+            cout << "?" << endl;
+    }
+
+    else {
+        cout << naiveResult << " " << memoResult << " ? ?" << endl;
+        if (p2D == true) 
+            cout << "?" << endl;
+        if (t == true)
+            cout << "?" << endl;
+    }
+}
+
 void argumentsChecking(int argc, char* argv[], bool &t, 
                         bool &p2D, bool &ignoreNaive,
                         string &fileName) {
@@ -183,12 +203,17 @@ int main (int argc, char* argv[]) {
     setRowsColumns(n,m,f);
     std::vector<std::vector<size_t>> mcp(n, std::vector<size_t>(m));
     SetMcp(mcp, f);
+    size_t naiveResult = SENTINEL;
     if (ignoreNaive == false) {
-        size_t result = mcp_naive(mcp, n, m, 0, 0);
-        cout << result << endl;
+        naiveResult = mcp_naive(mcp, n, m, 0, 0);
+        //cout << result << endl;
     }
+    size_t memoResult = mcp_memo(mcp,n,m);
+    /*
     cout << "memo solution" << endl;
     cout << mcp_memo(mcp,n,m);
+    */
+    printResultsFirstPartOfPractice(naiveResult,memoResult,ignoreNaive,p2D,t);
     f.close();
     }
 
