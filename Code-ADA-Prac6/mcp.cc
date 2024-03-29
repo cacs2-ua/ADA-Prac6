@@ -213,15 +213,27 @@ size_t mcp_it_vector(const std::vector<std::vector<size_t>>& mcp, size_t n, size
     return v0[m - 1]; 
 }
 
+void printStorage(const std::vector<std::vector<size_t>>& storage) {
+    for (size_t i = 0; i < storage.size(); ++i) {
+        for (size_t j = 0; j < storage[i].size(); ++j) {
+            // Asegura que cada número se imprima con un espacio fijo, en este caso, asumiendo un máximo de 2 dígitos
+            std::cout << storage[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
 void printFinalResults
-(size_t naiveResult, size_t memoResult, size_t iterResult, size_t iterEconomizedResult,
+(size_t naiveResult, size_t memoResult, 
+size_t iterResult, size_t iterEconomizedResult,
+const std::vector<std::vector<size_t>>& storage,
 bool ignoreNaive, bool p2D, bool t) {
     if (ignoreNaive == true) {
         cout << "- " << memoResult << " "  << iterResult << " " << iterEconomizedResult << endl;
         if (p2D == true) 
             cout << "?" << endl;
         if (t == true)
-            cout << "?" << endl;
+            printStorage(storage);
     }
 
     else {
@@ -229,7 +241,7 @@ bool ignoreNaive, bool p2D, bool t) {
         if (p2D == true) 
             cout << "?" << endl;
         if (t == true)
-            cout << "?" << endl;
+            printStorage(storage);
     }
 }
 
@@ -254,7 +266,7 @@ int main (int argc, char* argv[]) {
     std::vector<std::vector<size_t>> iterStorage(n, std::vector<size_t>(m, SENTINEL));
     size_t iterResult = mcp_it_matrix(iterStorage,mcp,n,m);
     size_t iterEconomizedResult = mcp_it_vector(mcp,n,m);
-    printFinalResults(naiveResult,memoResult,iterResult,iterEconomizedResult,ignoreNaive,p2D,t);
+    printFinalResults(naiveResult,memoResult,iterResult,iterEconomizedResult,iterStorage,ignoreNaive,p2D,t);
     f.close();
     }
 
