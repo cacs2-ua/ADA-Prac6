@@ -232,54 +232,66 @@ void printStorageP2D(const std::vector<std::vector<char>>& storage) {
     }
 }
 
-void mcp_parser(const std::vector<std::vector<size_t>>& iterStorage, std::vector<std::vector<char>>& iterStorageRet) {
+void mcp_parser(const std::vector<std::vector<size_t>>& mcp,const std::vector<std::vector<size_t>>& iterStorage, std::vector<std::vector<char>>& iterStorageRet) {
     size_t n = iterStorage.size();
     size_t m = iterStorage[0].size();
     size_t i = n - 1;
     size_t j = m - 1;
 
     iterStorageRet[i][j] = 'x'; // Marcar la posición final
-
+    // No sumar iterStorage[i][j] aquí porque se suma al principio.
+    size_t sumPath = mcp[i][j]; // Empieza desde 0.
+    
     while (i > 0 || j > 0) { // Continuar hasta que alcancemos el inicio
+        // La variable 'sumPath' solo debe acumular las celdas por las que pasamos.
+        // La celda final (n-1, m-1) ya está incluida en la suma, así que no la sumamos aquí.
         if (i == 0) {
-            // Solo podemos movernos hacia la izquierda
-            j--;
+            sumPath += mcp[i][j - 1];
+            j--; // Solo podemos movernos hacia la izquierda.
         } else if (j == 0) {
-            // Solo podemos movernos hacia arriba
-            i--;
+            sumPath += mcp[i - 1][j];
+            i--; // Solo podemos movernos hacia arriba.
         } else {
-            // Podemos movernos hacia arriba, izquierda o diagonalmente hacia arriba-izquierda
+            // Podemos movernos hacia arriba, izquierda o diagonalmente hacia arriba-izquierda.
             size_t up = iterStorage[i - 1][j];
             size_t left = iterStorage[i][j - 1];
             size_t upLeft = iterStorage[i - 1][j - 1];
             size_t minVal = std::min({up, left, upLeft});
 
-            // Mover en la dirección del valor mínimo
+            // Mover en la dirección del valor mínimo.
             if (minVal == upLeft) {
+                sumPath += mcp[i - 1][j - 1];
                 i--;
                 j--;
             } else if (minVal == up) {
+                sumPath += mcp[i - 1][j];
                 i--;
-            } else {
+            } else { // minVal == left
+                sumPath += mcp[i][j - 1];
                 j--;
             }
         }
-        iterStorageRet[i][j] = 'x'; // Marcar el camino
+        // Sumar el valor de la celda por la que pasamos, excepto si es la celda final.
+        iterStorageRet[i][j] = 'x'; // Marcar el camino.
     }
+    // Ahora, sumar el valor de la celda de inicio (0,0) al 'sumPath'.
+
     printStorageP2D(iterStorageRet);
+    cout << sumPath << endl;
 }
+
 
 
 void printFinalResults
 (size_t naiveResult, size_t memoResult, 
-size_t iterResult, size_t iterEconomizedResult,
+size_t iterResult, size_t iterEconomizedResult,const std::vector<std::vector<size_t>>& mcp,
 const std::vector<std::vector<size_t>>& storage,
 std::vector<std::vector<char>>& storageRet,
 bool ignoreNaive, bool p2D, bool t) {
     if (ignoreNaive == true) {
         cout << "- " << memoResult << " "  << iterResult << " " << iterEconomizedResult << endl;
         if (p2D == true) 
-            mcp_parser(storage, storageRet);
+            mcp_parser(mcp,storage, storageRet);
         if (t == true)
             printStorage(storage);
     }
@@ -287,7 +299,7 @@ bool ignoreNaive, bool p2D, bool t) {
     else {
         cout << naiveResult << " " << memoResult << " "  << iterResult << " " << iterEconomizedResult << endl;
         if (p2D == true) 
-            mcp_parser(storage, storageRet);
+            mcp_parser(mcp,storage, storageRet);
         if (t == true)
             printStorage(storage);
     }
@@ -315,7 +327,7 @@ int main (int argc, char* argv[]) {
     std::vector<std::vector<char>> iterStorageRet(n, std::vector<char>(m, '.'));
     size_t iterResult = mcp_it_matrix(iterStorage,mcp,n,m);
     size_t iterEconomizedResult = mcp_it_vector(mcp,n,m);
-    printFinalResults(naiveResult,memoResult,iterResult,iterEconomizedResult,iterStorage,iterStorageRet,ignoreNaive,p2D,t);
+    printFinalResults(naiveResult,memoResult,iterResult,iterEconomizedResult,mcp,iterStorage,iterStorageRet,ignoreNaive,p2D,t);
     f.close();
     }
 
