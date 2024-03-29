@@ -222,16 +222,64 @@ void printStorage(const std::vector<std::vector<size_t>>& storage) {
         std::cout << std::endl;
     }
 }
+void printStorageP2D(const std::vector<std::vector<char>>& storage) {
+    for (size_t i = 0; i < storage.size(); ++i) {
+        for (size_t j = 0; j < storage[i].size(); ++j) {
+            // Asegura que cada número se imprima con un espacio fijo, en este caso, asumiendo un máximo de 2 dígitos
+            std::cout << storage[i][j];
+        }
+        std::cout << std::endl;
+    }
+}
+
+void mcp_parser(const std::vector<std::vector<size_t>>& iterStorage, std::vector<std::vector<char>>& iterStorageRet) {
+    size_t n = iterStorage.size();
+    size_t m = iterStorage[0].size();
+    size_t i = n - 1;
+    size_t j = m - 1;
+
+    iterStorageRet[i][j] = 'x'; // Marcar la posición final
+
+    while (i > 0 || j > 0) { // Continuar hasta que alcancemos el inicio
+        if (i == 0) {
+            // Solo podemos movernos hacia la izquierda
+            j--;
+        } else if (j == 0) {
+            // Solo podemos movernos hacia arriba
+            i--;
+        } else {
+            // Podemos movernos hacia arriba, izquierda o diagonalmente hacia arriba-izquierda
+            size_t up = iterStorage[i - 1][j];
+            size_t left = iterStorage[i][j - 1];
+            size_t upLeft = iterStorage[i - 1][j - 1];
+            size_t minVal = std::min({up, left, upLeft});
+
+            // Mover en la dirección del valor mínimo
+            if (minVal == upLeft) {
+                i--;
+                j--;
+            } else if (minVal == up) {
+                i--;
+            } else {
+                j--;
+            }
+        }
+        iterStorageRet[i][j] = 'x'; // Marcar el camino
+    }
+    printStorageP2D(iterStorageRet);
+}
+
 
 void printFinalResults
 (size_t naiveResult, size_t memoResult, 
 size_t iterResult, size_t iterEconomizedResult,
 const std::vector<std::vector<size_t>>& storage,
+std::vector<std::vector<char>>& storageRet,
 bool ignoreNaive, bool p2D, bool t) {
     if (ignoreNaive == true) {
         cout << "- " << memoResult << " "  << iterResult << " " << iterEconomizedResult << endl;
         if (p2D == true) 
-            cout << "?" << endl;
+            mcp_parser(storage, storageRet);
         if (t == true)
             printStorage(storage);
     }
@@ -239,7 +287,7 @@ bool ignoreNaive, bool p2D, bool t) {
     else {
         cout << naiveResult << " " << memoResult << " "  << iterResult << " " << iterEconomizedResult << endl;
         if (p2D == true) 
-            cout << "?" << endl;
+            mcp_parser(storage, storageRet);
         if (t == true)
             printStorage(storage);
     }
@@ -264,9 +312,10 @@ int main (int argc, char* argv[]) {
     }
     size_t memoResult = mcp_memo(mcp,n,m);
     std::vector<std::vector<size_t>> iterStorage(n, std::vector<size_t>(m, SENTINEL));
+    std::vector<std::vector<char>> iterStorageRet(n, std::vector<char>(m, '.'));
     size_t iterResult = mcp_it_matrix(iterStorage,mcp,n,m);
     size_t iterEconomizedResult = mcp_it_vector(mcp,n,m);
-    printFinalResults(naiveResult,memoResult,iterResult,iterEconomizedResult,iterStorage,ignoreNaive,p2D,t);
+    printFinalResults(naiveResult,memoResult,iterResult,iterEconomizedResult,iterStorage,iterStorageRet,ignoreNaive,p2D,t);
     f.close();
     }
 
