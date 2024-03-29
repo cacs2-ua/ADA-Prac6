@@ -5,7 +5,7 @@
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",
-      "args": [],
+      "args": ["--ignore-naive", "--p2D", "-f", "pruebasMaps/02.map"],
       "stopAtEntry": false,
       "externalConsole": false,
       "cwd": "/home/cris/UA/thirdYear/secondTerm/ADA/Practicas/Practica6/ADA-Prac6/Code-ADA-Prac6",

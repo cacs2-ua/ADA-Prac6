@@ -23,26 +23,6 @@ void showUsageError() {
          << "mcp [--p2D] [-t] [--ignore-naive] -f file" << endl;
 }
 
-void printFinalResults
-(size_t naiveResult, size_t memoResult,
-bool ignoreNaive, bool p2D, bool t) {
-    if (ignoreNaive == true) {
-        cout << "- " << memoResult << " ? ?" << endl;
-        if (p2D == true) 
-            cout << "?" << endl;
-        if (t == true)
-            cout << "?" << endl;
-    }
-
-    else {
-        cout << naiveResult << " " << memoResult << " ? ?" << endl;
-        if (p2D == true) 
-            cout << "?" << endl;
-        if (t == true)
-            cout << "?" << endl;
-    }
-}
-
 void argumentsChecking(int argc, char* argv[], bool &t, 
                         bool &p2D, bool &ignoreNaive,
                         string &fileName) {
@@ -163,9 +143,83 @@ size_t mcp_memo(std::vector<std::vector<size_t>>& storage, const std::vector<std
     return storage[i][j];
 }
 
-size_t mcp_memo(const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m) {
-    std::vector<std::vector<size_t>> storage(n, std::vector<size_t>(m, SENTINEL));
+size_t mcp_memo(const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m, std::vector<std::vector<size_t>> &storage) {
     return mcp_memo(storage, mcp, n, m, 0, 0);
+}
+
+void test_common_prefix() {
+    std::vector<std::vector<size_t>> mcp = {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 9}
+    };
+
+    size_t n = 3;
+    size_t m = 3;
+
+    size_t result = mcp_naive(mcp, n, m, 0, 0);
+    std::cout << "Result: " << result << std::endl;
+
+}
+
+void assignDimensionsToStorageRet(const std::vector<std::vector<size_t>>& storage, 
+                                std::vector<std::vector<char>>& storageRet) {
+    storageRet.resize(storage.size()); 
+
+    for (size_t i = 0; i < storage.size(); ++i) {
+        storageRet[i].resize(storage[i].size());
+    }
+}
+
+void assignValuesToStorageRet(const std::vector<std::vector<size_t>>& storage, 
+                                std::vector<std::vector<char>>& storageRet) {
+    for (size_t i = 0; i < storage.size(); ++i) { 
+        for (size_t j = 0; j < storage[i].size(); ++j) {
+            if (storage[i][j] == SENTINEL) {
+                storageRet[i][j] = '.';
+            }
+            else {
+                storageRet[i][j] = 'x';
+            }
+        }
+    }
+}
+
+
+void printStorageRet(const std::vector<std::vector<char>>& storageRet) {
+    for (size_t i = 0; i < storageRet.size(); ++i) {
+        for (size_t j = 0; j < storageRet[i].size(); ++j) {
+            cout << storageRet[i][j];
+        }
+        cout << endl;
+    }
+
+}
+void mcp_parser(const std::vector<std::vector<size_t>>& storage, 
+                                std::vector<std::vector<char>>& storageRet) {
+    assignDimensionsToStorageRet(storage, storageRet);
+    assignValuesToStorageRet(storage, storageRet);
+    printStorageRet(storageRet);
+}
+
+void printFinalResults
+(size_t naiveResult, size_t memoResult,
+bool ignoreNaive, bool p2D, std::vector<std::vector<size_t>>& storage,std::vector<std::vector<char>>& storageRet, bool t) {
+    if (ignoreNaive == true) {
+        cout << "- " << memoResult << " ? ?" << endl;
+        if (p2D == true) 
+            mcp_parser(storage, storageRet);
+        if (t == true)
+            cout << "?" << endl;
+    }
+
+    else {
+        cout << naiveResult << " " << memoResult << " ? ?" << endl;
+        if (p2D == true) 
+            printStorageRet(storageRet);
+        if (t == true)
+            cout << "?" << endl;
+    }
 }
 
 int main (int argc, char* argv[]) {
@@ -180,13 +234,15 @@ int main (int argc, char* argv[]) {
     if (f.is_open()) {
     setRowsColumns(n,m,f);
     std::vector<std::vector<size_t>> mcp(n, std::vector<size_t>(m));
+    std::vector<std::vector<size_t>> storage(n, std::vector<size_t>(m, SENTINEL));
+    std::vector<std::vector<char>> storageRet;
     SetMcp(mcp, f);
     size_t naiveResult = SENTINEL;
     if (ignoreNaive == false) {
         naiveResult = mcp_naive(mcp, n, m, 0, 0);
     }
-    size_t memoResult = mcp_memo(mcp,n,m);
-    printFinalResults(naiveResult,memoResult,ignoreNaive,p2D,t);
+    size_t memoResult = mcp_memo(mcp,n,m,storage);
+    printFinalResults(naiveResult,memoResult,ignoreNaive,p2D,storage,storageRet,t);
     f.close();
     }
 
