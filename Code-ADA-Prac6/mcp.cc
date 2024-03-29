@@ -181,11 +181,43 @@ size_t mcp_it_matrix(std::vector<std::vector<size_t>>& storage, const std::vecto
     return storage[n - 1][m - 1];    
 }
 
+void swap(std::vector<size_t> &v0, std::vector<size_t> &v1) {
+    v1.swap(v0);
+}
+
+size_t mcp_it_vector(const std::vector<std::vector<size_t>>& mcp, size_t n, size_t m) {
+    std::vector<size_t> v0(m,SENTINEL);
+    std::vector<size_t> v1(m,SENTINEL);
+    for (size_t i = 0; i < n; ++i) { 
+        for (size_t j = 0; j < m; ++j) {
+            if (i == 0 && j == 0) {
+                v1[j] = mcp[0][0];
+                continue;
+            }
+
+            if (i == 0) {
+                v1[j] = v1[j - 1] + mcp[i][j];
+                continue;
+            }
+
+            if (j == 0){
+                v1[j] = v0[j] + mcp[i][j];
+                continue;
+            }
+
+            v1[j] = mcp[i][j] + std::min({v0[j], v0[j - 1], v1[j - 1]});
+        }
+        swap(v0,v1);
+    }
+
+    return v0[m - 1]; 
+}
+
 void printFinalResults
-(size_t naiveResult, size_t memoResult,size_t iterResult,
+(size_t naiveResult, size_t memoResult, size_t iterResult, size_t iterEconomizedResult,
 bool ignoreNaive, bool p2D, bool t) {
     if (ignoreNaive == true) {
-        cout << "- " << memoResult << " "  << iterResult << " ?" << endl;
+        cout << "- " << memoResult << " "  << iterResult << " " << iterEconomizedResult << endl;
         if (p2D == true) 
             cout << "?" << endl;
         if (t == true)
@@ -193,7 +225,7 @@ bool ignoreNaive, bool p2D, bool t) {
     }
 
     else {
-        cout << naiveResult << " " << memoResult << " " << iterResult <<" ?" << endl;
+        cout << naiveResult << " " << memoResult << " "  << iterResult << " " << iterEconomizedResult << endl;
         if (p2D == true) 
             cout << "?" << endl;
         if (t == true)
@@ -221,7 +253,8 @@ int main (int argc, char* argv[]) {
     size_t memoResult = mcp_memo(mcp,n,m);
     std::vector<std::vector<size_t>> iterStorage(n, std::vector<size_t>(m, SENTINEL));
     size_t iterResult = mcp_it_matrix(iterStorage,mcp,n,m);
-    printFinalResults(naiveResult,memoResult,iterResult,ignoreNaive,p2D,t);
+    size_t iterEconomizedResult = mcp_it_vector(mcp,n,m);
+    printFinalResults(naiveResult,memoResult,iterResult,iterEconomizedResult,ignoreNaive,p2D,t);
     f.close();
     }
 
